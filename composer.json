@@ -19,9 +19,6 @@
         "illuminate/events": "4.1.*"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
         "psr-0": {
             "Kalani\\DateRange\\": "src/"
         }
