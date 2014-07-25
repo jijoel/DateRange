@@ -66,7 +66,7 @@ Usage
 
 Enter a start and (optional) end date. DateRange uses Carbon internally to set dates, so you can use any method that Carbon uses to make a DateRange object. For instance, all of these strings are valid:
 
-    DateRange::make();            // defaults to today
+    DateRange::make();                                // defaults to today
     DateRange::make('today');
     DateRange::make('today', 'tomorrow');
     DateRange::make('today', 'next Friday');
@@ -105,8 +105,8 @@ The predefined formats are described above.
 
 Each format can also have a range delimiter. This will enter text before, in the middle, and after two dates. If the start and end date are the same, it will use an alternate notation. So, for instance, a title will show up in one of these two ways:
 
-    For Friday, July 25, 2014         (for one date only)
-    From Friday, July 25, 2014 to Saturday, July 26, 2014
+    For Friday, July 25, 2014                                       // for one date only
+    From Friday, July 25, 2014 to Saturday, July 26, 2014           // for a range of dates
 
 You can also combine the style with the range delimiters, eg:
 
@@ -120,9 +120,9 @@ You can also specify a closure in the configuration file to do more advanced cal
 
 There are several comparison functions, including:
 
-    isSameDay()     // start and end are on the same day
-    onSameDay()     // (same)
-    fullDay()       // from the beginning of day1 to the end of day2
+    isSameDay()           // start and end are on the same day
+    onSameDay()           // (same)
+    fullDay()             // from the beginning of day1 to the end of day2
     overlaps($other)      // returns True if this range overlaps another
     isAdjacentTo($other)  // returns True if this range is adjacent to another
 
