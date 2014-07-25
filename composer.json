@@ -1,0 +1,30 @@
+{
+    "name": "kalani/date-range",
+    "description": "",
+    "authors": [
+        {
+            "name": "Joel Hatch",
+            "email": "joel@kalani.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.1.*",
+        "illuminate/config": "4.1.*",
+        "nesbot/carbon": "1.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "4.0.*",
+        "illuminate/events": "4.1.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Kalani\\DateRange\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
