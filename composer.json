@@ -1,12 +1,13 @@
 {
     "name": "kalani/date-range",
-    "description": "",
+    "description": "Laravel 4 package to conveniently handle formatted date ranges",
     "authors": [
         {
             "name": "Joel Hatch",
             "email": "joel@kalani.com"
         }
     ],
+    "license": "MIT",
     "require": {
         "php": ">=5.3.0",
         "illuminate/support": "4.1.*",
