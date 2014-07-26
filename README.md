@@ -1,7 +1,13 @@
 DateRange
 ==========
 
-The DateRange class provides a convenient way to handle formatted date ranges. 
+The DateRange class provides a convenient way to handle formatted date ranges. It lets you do things like this:
+
+```php
+$range = DateRange::make('2/1/2014');
+$range->start_sql;     // returns 2014-02-01
+$range->title          // returns "For Saturday, February 1, 2014" 
+```
 
 Using the DateRange class, you can initialize dates from many different formats, and output them to styles specified via the configuration file.
 
@@ -113,7 +119,18 @@ You can also combine the style with the range delimiters, eg:
     range_short_title:   From 7/25/2014 to 7/26/2014
     short_title:         (same)
 
-You can also specify a closure in the configuration file to do more advanced calculations, such as the difference in days between two dates.
+You can also specify a closure in the configuration file to do more advanced calculations, such as the difference in days between two dates. For instance,
+
+    'days' => function($start, $end) { 
+        return $end->diffInDays($start); 
+    },
+
+Note that, if the dates are not valid objects (eg, one or both of the dates is not available), the configuration value `none.calculations` will be returned for any calculation.
+
+If you want to change the default returned for a non-existing value, you can call the format method:
+
+    $a = DateRange::make(DateRange::none());
+    $a->format('start','style','format-if-empty');
 
 
 ### Other Range Functions

@@ -110,7 +110,15 @@ class DateRange
     }
 
 
-// // Get formatted output -------------------------------------------------------
+// Get formatted output -------------------------------------------------------
+
+    public function format($date, $style, $default=Null)
+    {
+        if ($date == 'range')
+            return $this->applyStyleToRange($style, $default);
+
+        return $this->applyStyleToDate($date, $style, $default);
+    }
 
     public function __get($name)
     {
@@ -124,9 +132,9 @@ class DateRange
             return($this->executeClosure($value,$closure));
 
         if ($value == 'range')
-            return $this->applyStyleToRange($process);
+            return $this->applyStyleToRange($process, Null);
 
-        return $this->applyStyleToDate($value, $process);
+        return $this->applyStyleToDate($value, $process, Null);
     }
 
     private function splitValueFromProcess($value)
@@ -153,17 +161,17 @@ class DateRange
         return $this->getConfig('none.calculations');
     }
 
-    private function applyStyleToRange($requestedStyle)
+    private function applyStyleToRange($requestedStyle, $default)
     {
         list($delimiters, $style) = $this->splitDelimitersFromStyle($requestedStyle);
 
         if ($this->start == $this->end)
-            return $delimiters['only'] . $this->formatDate($this->start, $style);
+            return $delimiters['only'] . $this->formatDate($this->start, $style, $default);
 
         return $delimiters['before']
-            . $this->formatDate($this->start, $style)
+            . $this->formatDate($this->start, $style, $default)
             . $delimiters['middle'] 
-            . $this->formatDate($this->end, $style)
+            . $this->formatDate($this->end, $style, $default)
             . $delimiters['after'];
     }
 
@@ -192,16 +200,16 @@ class DateRange
         return $this->getConfig('range.default');
     }
 
-    private function applyStyleToDate($value, $style)
+    private function applyStyleToDate($value, $style, $default)
     {
         $prefix = $this->getConfig("range.$style.only");
         if ($prefix)
-            return $prefix.$this->formatDate($this->$value(), $style);
+            return $prefix.$this->formatDate($this->$value(), $style, $default);
         
-        return $this->formatDate($this->$value(), $style);
+        return $this->formatDate($this->$value(), $style, $default);
     }
 
-    public function formatDate($date, $style)
+    public function formatDate($date, $style, $default=Null)
     {
         if ( ! is_object($date)) {
             $default = $this->getConfig('none.'.$style, 'n/a');
@@ -211,6 +219,9 @@ class DateRange
         $formatString = $this->getConfig('styles.'.$style);
         if ($formatString)
             return $date->format($formatString);
+
+        if ($default)
+            return $date->format($default);
 
         return $date->format($this->getConfig('styles.default'));
     }

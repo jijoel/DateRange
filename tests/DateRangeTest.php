@@ -148,6 +148,33 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('x', $test->formatDate($test->start, 'foo'));
     }
 
+    public function testShouldFormatDateWithOverriddenDefaultStyle()
+    {
+        $this->config->setup(['styles.default'=>'z']);
+        $test = $this->test->make(self::DATE1_TINY);
+        $this->assertEquals('x', $test->formatDate($test->start, 'foo', 'x'));
+    }
+
+    public function testShouldFormatWithOverridenDefaultStyle()
+    {
+        $this->config->setup([
+            'range.default' => ['only'=>''],
+            'styles.default'=>'z'
+        ]);
+        $test = $this->test->make(self::DATE1_TINY);
+        $this->assertEquals('x', $test->format('start', 'foo', 'x'));        
+    }
+
+    public function testShouldFormatRangeWithOverridenDefaultStyle()
+    {
+        $this->config->setup([
+            'range.default' => ['only'=>''],
+            'styles.default'=>'z']
+        );
+        $test = $this->test->make(self::DATE1_TINY);
+        $this->assertEquals('x', $test->format('range', 'foo', 'x'));        
+    }
+
     public function testShouldReturnSingleFormattedDate()
     {
         $this->config->setup(['styles.short'=>'n/j/Y']);
