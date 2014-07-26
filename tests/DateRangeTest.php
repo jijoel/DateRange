@@ -179,7 +179,7 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
     public function testShouldReturnFormattedDateRange()
     {
         $this->config->setup([
-            'range.default'=>['before'=>'a ','middle'=>' - ','end'=>' b'],
+            'range.default'=>['before'=>'a ','middle'=>' - ','after'=>' b'],
             'styles.short'=>'x'
         ]);
         $test = $this->test->make(self::DATE1_TINY,self::DATE2_TINY);
@@ -375,15 +375,65 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testShouldBeAbleToGetDifferenceInDaysViaClosure()
+    public function testShouldUseClosure()
     {
-        $this->config->setup(['calculations.closure' => function($x){
-            return 'foo'; 
+        $this->config->setup([
+            'calculations.closure' => function($x){
+                return 'foo'; 
+            }]);
+
+        $test = $this->test->make(self::DATE1_SHORT);
+        $this->assertEquals('foo', $test->closure);
+    }
+
+    public function testShouldCalculateDifferenceInDaysWithClosure()
+    {
+        $this->config->setup(['calculations.days'=>function($x,$y){
+            return $x->diffInDays($y);
         }]);
 
         $test = $this->test->make(self::DATE1_SHORT, self::DATE2_SHORT);
-        $this->assertEquals('foo', $test->closure);
+        $this->assertEquals(3, $test->days);
     }
+
+    public function testShouldNotAttemptClosureOnNonObject()
+    {
+        $this->config->setup([
+            'range.default' => ['only'=>''],
+            'none.default'=>'n/a',
+            'none.calculations'=>0,
+            'calculations.days'=>function($start,$end){
+                return $end->diffInDays($start);
+            }]);
+
+        $test = $this->test->make(DateRange::NONE);
+
+        $this->assertEquals('n/a', $test->start);
+        $this->assertEquals('n/a', $test->short);
+        $this->assertEquals(0, $test->days);
+    }
+
+    public function testShouldUseClosureOnOnePartOfMixedObject()
+    {
+        $this->config->setup([
+            'range.default' => ['before'=>'a ','middle'=>' - ','after'=>' b','only'=>'A '],
+            'styles.short' => 'x',
+            'none.default' => 'n/a',
+            'none.calculations' => 'HI',
+            'calculations.foo' => function($date) {
+                return $date->format('x');
+            }
+        ]);
+
+        $test = $this->test->make(self::DATE1_SHORT, DateRange::NONE);
+        $this->assertEquals('x', $test->start_short);
+        $this->assertEquals('n/a', $test->end_short);
+        $this->assertEquals('x', $test->start_foo);
+        $this->assertEquals('HI', $test->end_foo);
+        $this->assertEquals('HI', $test->foo);
+    }
+
+
 
 }
 

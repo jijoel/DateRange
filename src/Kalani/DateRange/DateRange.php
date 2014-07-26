@@ -140,10 +140,17 @@ class DateRange
 
     private function executeClosure($value, $closure)
     {
-        if ($value == 'range')
-            return $closure($this->start, $this->end);
+        if ($value == 'range') {
+            if ($this->canCompareDates())
+                return $closure($this->start, $this->end);
 
-        return $closure($this->$value);
+            return $this->getConfig('none.calculations');
+        }
+
+        if ($this->isCarbonObject($this->$value))
+            return $closure($this->$value);
+
+        return $this->getConfig('none.calculations');
     }
 
     private function applyStyleToRange($requestedStyle)
@@ -157,7 +164,7 @@ class DateRange
             . $this->formatDate($this->start, $style)
             . $delimiters['middle'] 
             . $this->formatDate($this->end, $style)
-            . $delimiters['end'];
+            . $delimiters['after'];
     }
 
     private function splitDelimitersFromStyle($requestedStyle)
@@ -197,8 +204,8 @@ class DateRange
     public function formatDate($date, $style)
     {
         if ( ! is_object($date)) {
-            $default = $this->getConfig('none.'.$style, '(n/a)');
-            return ($default<>'(n/a)') ? $default : $date;            
+            $default = $this->getConfig('none.'.$style, 'n/a');
+            return ($default<>'n/a') ? $default : $date;            
         }
 
         $formatString = $this->getConfig('styles.'.$style);
@@ -218,7 +225,13 @@ class DateRange
 
     private function canCompareDates()
     {
-        return $this->start instanceof Carbon && $this->end instanceof Carbon;
+        return $this->isCarbonObject($this->start) 
+            && $this->isCarbonObject($this->end);
+    }
+
+    private function isCarbonObject($object)
+    {
+        return $object instanceof Carbon;
     }
 
 }

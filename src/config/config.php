@@ -27,6 +27,11 @@ return array(
          */
         'sql' => Null,
         
+        /**
+         * When performing a calculation, set the n/a default to this:
+         */
+        'calculations' => 0,
+
     ),
 
 
@@ -85,8 +90,8 @@ return array(
         'default' => [
             'before' => '',
             'middle' => ' &ndash; ',
-            'end' => '',
-            'only' => '',
+            'after'  => '',
+            'only'   => '',
         ],
 
         /**
@@ -95,14 +100,14 @@ return array(
         'title' => [
             'before' => 'From ',
             'middle' => ' to ',
-            'end'    => '',
+            'after'  => '',
             'only'   => 'For ',
         ],
 
         'url' => [
             'before' => 'start=',
             'middle' => '&end=',
-            'end'    => '',
+            'after'  => '',
             'only'   => 'date=',
         ],
     ),
@@ -119,10 +124,14 @@ return array(
     */
     'calculations' => array(
 
-        'days' => function($start, $end) { return $end->diffInDays($start); },
+        'days' => function($start, $end) { 
+            return $end->diffInDays($start); 
+        },
 
         // round months to the nearest two weeks
-        'months' => function($start, $end) { return $end->copy()->addDays(14)->diffInMonths($start); },
+        'months' => function($start, $end) { 
+            return $end->copy()->addDays(14)->diffInMonths($start); 
+        },
 
         'decimal' => function($date) {
             $hours = $date->hour + ($date->minute / 60);
