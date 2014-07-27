@@ -102,10 +102,12 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Carbon::parse($end), $test->end);
     }
 
-    public function testThrowExceptionIfEndPreceedsStart()
+    public function testSwitchDatesIfEndPreceedsStart()
     {
-        $this->setExpectedException(self::DATE_ORDER_EXCEPTION);
+        // $this->setExpectedException(self::DATE_ORDER_EXCEPTION);
         $test = $this->test->make(self::DATE2_SHORT, self::DATE1_SHORT);
+
+        $this->assertEquals(Carbon::parse(self::DATE1_SHORT), $test->start);
     }
 
     public function testConstructorShouldAcceptNonApplicableValue()
@@ -163,6 +165,17 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
         ]);
         $test = $this->test->make(self::DATE1_TINY);
         $this->assertEquals('x', $test->format('start', 'foo', 'x'));        
+    }
+
+    public function testShouldFormatEmptyDateWithOverridenDefaultValue()
+    {
+        $this->config->setup([
+            'none.default' => 'n/a',
+            'range.default' => ['only'=>''],
+            'styles.default'=>'z'
+        ]);
+        $test = $this->test->make(DateRange::NONE);
+        $this->assertEquals('value', $test->format('start', 'foo', Null, 'value'));
     }
 
     public function testShouldFormatRangeWithOverridenDefaultStyle()
@@ -465,25 +478,4 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
 }
 
 
-class MockConfig extends Illuminate\Config\Repository
-{
-    private $keys;
 
-    public function __construct(){}
-
-    public function get($key, $default='')
-    {
-        $key = str_replace('date-range::', '', $key);
-
-        if (isset($this->keys[$key]))
-            return $this->keys[$key];
-
-        // var_dump($key);
-        return $default;
-    }
-
-    public function setup(array $values)
-    {
-        $this->keys = $values;
-    }
-}

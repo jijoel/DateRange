@@ -1,6 +1,5 @@
 <?php namespace Kalani\DateRange;
 
-use App;
 use DateTime;
 use Carbon\Carbon;
 use Illuminate\Config\Repository as Config;
@@ -42,7 +41,14 @@ class DateRange
         $this->end = $this->getCarbonDate($end);
 
         if ($this->canCompareDates() && $this->start->gt($this->end))
-            throw new DateOrderException('Start date must precede end date');
+            $this->swapDates();
+    }
+
+    private function swapDates()
+    {
+        $temp = $this->start;
+        $this->start = $this->end;
+        $this->end = $temp;
     }
 
     private function getCarbonDate($date)
@@ -112,38 +118,38 @@ class DateRange
 
 // Get formatted output -------------------------------------------------------
 
-    public function format($date, $style, $default=Null)
-    {
-        if ($date == 'range')
-            return $this->applyStyleToRange($style, $default);
-
-        return $this->applyStyleToDate($date, $style, $default);
-    }
-
     public function __get($name)
     {
         if (method_exists($this, $name)) 
             return $this->$name();
 
-        list($value, $process) = $this->splitValueFromProcess($name);
+        list($value, $style) = $this->getValueAndStyleOfRequestedAttribute($name);
 
-        $closure = $this->getConfig("calculations.$process");
+        $closure = $this->getConfig("calculations.$style");
         if ($closure)
             return($this->executeClosure($value,$closure));
 
         if ($value == 'range')
-            return $this->applyStyleToRange($process, Null);
+            return $this->applyStyleToRange($style, Null, Null);
 
-        return $this->applyStyleToDate($value, $process, Null);
+        return $this->applyStyleToDate($value, $style, Null, Null);
     }
 
-    private function splitValueFromProcess($value)
+    private function getValueAndStyleOfRequestedAttribute($value)
     {
         foreach(['start','end','range'] as $date)
             if (strpos($value, $date) === 0)
                 return array($date, substr($value, strlen($date)+1));
 
         return array('range', $value);
+    }
+
+    public function format($date, $style, $defaultFormat=Null, $defaultValue=Null)
+    {
+        if ($date == 'range')
+            return $this->applyStyleToRange($style, $defaultFormat, $defaultValue);
+
+        return $this->applyStyleToDate($date, $style, $defaultFormat, $defaultValue);
     }
 
     private function executeClosure($value, $closure)
@@ -161,17 +167,17 @@ class DateRange
         return $this->getConfig('none.calculations');
     }
 
-    private function applyStyleToRange($requestedStyle, $default)
+    private function applyStyleToRange($requestedStyle, $defaultFormat, $defaultValue)
     {
         list($delimiters, $style) = $this->splitDelimitersFromStyle($requestedStyle);
 
         if ($this->start == $this->end)
-            return $delimiters['only'] . $this->formatDate($this->start, $style, $default);
+            return $delimiters['only'] . $this->formatDate($this->start, $style, $defaultFormat, $defaultValue);
 
         return $delimiters['before']
-            . $this->formatDate($this->start, $style, $default)
+            . $this->formatDate($this->start, $style, $defaultFormat, $defaultValue)
             . $delimiters['middle'] 
-            . $this->formatDate($this->end, $style, $default)
+            . $this->formatDate($this->end, $style, $defaultFormat, $defaultValue)
             . $delimiters['after'];
     }
 
@@ -200,28 +206,31 @@ class DateRange
         return $this->getConfig('range.default');
     }
 
-    private function applyStyleToDate($value, $style, $default)
+    private function applyStyleToDate($value, $style, $defaultFormat, $defaultValue)
     {
         $prefix = $this->getConfig("range.$style.only");
         if ($prefix)
-            return $prefix.$this->formatDate($this->$value(), $style, $default);
+            return $prefix.$this->formatDate($this->$value(), $style, $defaultFormat, $defaultValue);
         
-        return $this->formatDate($this->$value(), $style, $default);
+        return $this->formatDate($this->$value(), $style, $defaultFormat, $defaultValue);
     }
 
-    public function formatDate($date, $style, $default=Null)
+    public function formatDate($date, $style, $defaultFormat=Null, $defaultValue=Null)
     {
         if ( ! is_object($date)) {
+            if ($defaultValue)
+                return $defaultValue;
+
             $default = $this->getConfig('none.'.$style, 'n/a');
-            return ($default<>'n/a') ? $default : $date;            
+            return ($default<>'n/a') ? $default : $date;
         }
 
         $formatString = $this->getConfig('styles.'.$style);
         if ($formatString)
             return $date->format($formatString);
 
-        if ($default)
-            return $date->format($default);
+        if ($defaultFormat)
+            return $date->format($defaultFormat);
 
         return $date->format($this->getConfig('styles.default'));
     }
