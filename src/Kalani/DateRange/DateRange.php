@@ -118,6 +118,11 @@ class DateRange
 
 // Get formatted output -------------------------------------------------------
 
+    public function __toString()
+    {
+        return $this->range_default;
+    }
+
     public function __get($name)
     {
         if (method_exists($this, $name)) 
@@ -218,7 +223,7 @@ class DateRange
     public function formatDate($date, $style, $defaultFormat=Null, $defaultValue=Null)
     {
         if ( ! is_object($date)) {
-            if ($defaultValue)
+            if ( ! is_null($defaultValue))
                 return $defaultValue;
 
             $default = $this->getConfig('none.'.$style, 'n/a');
@@ -235,8 +240,27 @@ class DateRange
         return $date->format($this->getConfig('styles.default'));
     }
 
+// TODO: Temporary. Remove!
 
-// // Helper Methods -------------------------------------------------------------
+    public function hours($roundToMinutes=1, $roundToDecimalPlaces=2)
+    {
+        $minutes = $this->start->diffInMinutes($this->end);
+        $hours = $minutes / 60;
+
+        $periodsPerHour = 60 / $roundToMinutes;
+        $roundedHours = round($hours * $periodsPerHour) / $periodsPerHour;
+
+        return round($roundedHours, $roundToDecimalPlaces);
+    }
+
+    public function hoursRoundedToNearest($minutes=1, $decimalPlaces=2)
+    {
+        return $this->hours($minutes, $decimalPlaces);
+    }
+
+
+
+// Helper Methods -------------------------------------------------------------
 
     private function getConfig($value, $default='')
     {

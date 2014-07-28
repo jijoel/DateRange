@@ -246,6 +246,20 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Prefix X', $test->title);
     }
 
+    public function testCanReturnString()
+    {
+        $this->config->setup([
+            'range.default'=>['only'=>''],
+            'default'=>'X'
+        ]);
+
+        $test = $this->test->make(self::DATE1_TINY);
+
+        $this->assertTrue(is_string((string)$test));
+    }
+
+
+
     /**
      * @dataProvider getDatesForConstructor
      */
