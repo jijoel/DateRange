@@ -10,14 +10,14 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "4.1.*",
-        "illuminate/config": "4.1.*",
+        "illuminate/support": "~4",
+        "illuminate/config": "~4",
         "nesbot/carbon": "1.*"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "4.0.*",
-        "illuminate/events": "4.1.*"
+        "illuminate/events": "~4"
     },
     "autoload": {
         "psr-0": {
