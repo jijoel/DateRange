@@ -264,7 +264,7 @@ class DateRange
 
     private function getConfig($value, $default='')
     {
-        return $this->config->get('date-range::'.$value, $default);
+        return $this->config->get('date-range.'.$value, $default);
     }
 
     private function canCompareDates()

@@ -8,7 +8,7 @@ class MockConfig implements Illuminate\Contracts\Config\Repository
 
     public function get($key, $default='')
     {
-        $key = str_replace('date-range::', '', $key);
+        $key = str_replace('date-range.', '', $key);
 
         if (isset($this->keys[$key]))
             return $this->keys[$key];

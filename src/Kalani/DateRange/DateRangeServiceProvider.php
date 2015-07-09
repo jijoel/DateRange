@@ -15,13 +15,15 @@ class DateRangeServiceProvider extends ServiceProvider
 	protected $defer = false;
 
 	/**
-	 * Bootstrap the application events.
+	 * Perform post-registration booting of services.
 	 *
 	 * @return void
 	 */
 	public function boot()
 	{
-		$this->package('kalani/date-range');
+	    $this->publishes([
+	        __DIR__.'/../../config/date-range.php' => config_path('date-range.php'),
+	    ]);
 	}
 
 	/**
