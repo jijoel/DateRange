@@ -1,6 +1,6 @@
 <?php
 
-class MockConfig extends Illuminate\Config\Repository
+class MockConfig implements Illuminate\Contracts\Config\Repository
 {
     private $keys;
 
@@ -21,6 +21,11 @@ class MockConfig extends Illuminate\Config\Repository
     {
         $this->keys = $values;
     }
+
+    public function has($key) {}
+    public function set($key, $value=null) {}
+    public function prepend($key, $value) {}
+    public function push($key, $value) {}
 
 }
 

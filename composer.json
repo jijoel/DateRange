@@ -1,6 +1,6 @@
 {
     "name": "kalani/date-range",
-    "description": "Laravel 4 package to conveniently handle formatted date ranges",
+    "description": "Laravel 5 package to conveniently handle formatted date ranges",
     "authors": [
         {
             "name": "Joel Hatch",
@@ -9,15 +9,15 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=5.3.0",
-        "illuminate/support": "~4",
-        "illuminate/config": "~4",
+        "illuminate/contracts": "5.*",
         "nesbot/carbon": "1.*"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "4.0.*",
-        "illuminate/events": "~4"
+        "phpunit/phpunit": "4.*"
+    },
+    "suggest": {
+        "illuminate/support": "Required to use facade"
     },
     "autoload": {
         "psr-0": {

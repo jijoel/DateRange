@@ -2,7 +2,7 @@
 
 use DateTime;
 use Carbon\Carbon;
-use Illuminate\Config\Repository as Config;
+use Illuminate\Contracts\Config\Repository as Config;
 
 
 class DateRange
