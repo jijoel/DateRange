@@ -120,7 +120,55 @@ class DateRange
 
     public function __toString()
     {
-        return $this->range_default;
+        return (string) $this->range_default;
+    }
+    protected function calculationsDefaultDays($start, $end){
+        return $end->diffInDays($start);
+    }
+    protected function calculationsDefaultMonths($start, $end){
+        return $end->copy()->addDays(14)->diffInMonths($start);
+    }
+    protected function calculationsDefaultDecimal($date){
+        $hours = $date->hour + ($date->minute / 60);
+        return round($hours,1);
+    }
+
+    private function executeCallback($value, $closure,$style)
+    {
+        if ($value == 'range') {
+            if ($this->canCompareDates()){
+                if(is_callable($closure)){
+                    return $closure($this->start, $this->end);
+                }else{
+                    if(is_string($closure) && !empty($closure)){
+                        list($className,$methodName) = explode('@',$closure);
+                        if(!empty($className) && !empty($methodName)){
+                            return call_user_func_array([$className,$methodName],[$this->start, $this->end]);
+                        }
+                    }
+                    $defaultMethodName = 'calculationsDefault'.ucfirst($style);
+                    return call_user_func_array([$this,$defaultMethodName],[$this->start, $this->end]);
+                }
+            }
+            return $this->getConfig('none.calculations');
+        }
+
+        if ($this->isCarbonObject($this->$value)){
+            if(is_callable($closure)){
+                return $closure($this->$value);
+            }else{
+                if(is_string($closure) && !empty($closure)){
+                    list($className,$methodName) = explode('@',$closure);
+                    if(!empty($className) && !empty($methodName)){
+                        return call_user_func_array([$className,$methodName],[$this->$value]);
+                    }
+                }
+                $defaultMethodName = 'calculationsDefault'.ucfirst($style);
+                return call_user_func_array([$this,$defaultMethodName],[$this->$value]);
+            }
+        }
+
+        return $this->getConfig('none.calculations');
     }
 
     public function __get($name)
@@ -131,8 +179,9 @@ class DateRange
         list($value, $style) = $this->getValueAndStyleOfRequestedAttribute($name);
 
         $closure = $this->getConfig("calculations.$style");
+
         if ($closure)
-            return($this->executeClosure($value,$closure));
+            return $this->executeCallback($value,$closure,$style);
 
         if ($value == 'range')
             return $this->applyStyleToRange($style, Null, Null);
