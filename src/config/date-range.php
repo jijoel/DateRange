@@ -124,19 +124,22 @@ return array(
     */
     'calculations' => array(
 
-        'days' => function($start, $end) { 
-            return $end->diffInDays($start); 
-        },
+        'days' => true,
+//        function($start, $end) {
+//            return $end->diffInDays($start);
+//        },
 
         // round months to the nearest two weeks
-        'months' => function($start, $end) { 
-            return $end->copy()->addDays(14)->diffInMonths($start); 
-        },
+        'months' => true,
+//        function($start, $end) {
+//            return $end->copy()->addDays(14)->diffInMonths($start);
+//        },
 
-        'decimal' => function($date) {
-            $hours = $date->hour + ($date->minute / 60);
-            return round($hours,1);
-        },
+        'decimal' => true,
+//        function($date) {
+//            $hours = $date->hour + ($date->minute / 60);
+//            return round($hours,1);
+//        },
 
     ),
 
