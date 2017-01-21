@@ -3,7 +3,7 @@
 use Kalani\DateRange\DateRange;
 use Carbon\Carbon;
 
-
+/** @group now */
 class DateRangeTest extends PHPUnit_Framework_TestCase
 {
     const DATE_ORDER_EXCEPTION = 'Kalani\DateRange\DateOrderException';
@@ -487,7 +487,19 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('HI', $test->foo);
     }
 
+    public function testShouldReturnZeroLengthIfNoStart()
+    {
+        $test = $this->test->make(DateRange::NONE, DateRange::NONE);
 
+        $this->assertEquals(0, $test->hours());
+    }
+
+    public function testShouldReturnZeroLengthIfNoEnd()
+    {
+        $test = $this->test->make(null, DateRange::NONE);
+
+        $this->assertEquals(0, $test->hours());
+    }
 
 }
 

@@ -244,6 +244,9 @@ class DateRange
 
     public function hours($roundToMinutes=1, $roundToDecimalPlaces=2)
     {
+        if (! (is_object($this->start) && is_object($this->end)) )
+            return 0;
+        
         $minutes = $this->start->diffInMinutes($this->end);
         $hours = $minutes / 60;
 
