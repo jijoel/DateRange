@@ -9,6 +9,7 @@ class DateRange
 {
     const NONE = -1;
 
+    protected $calculator;
     protected $config;
     protected $start;
     protected $end;
@@ -16,6 +17,9 @@ class DateRange
     public function __construct(Config $config)
     {
         $this->config = $config;
+        $this->calculator = $this->getConfig(
+            'calculations', 'Kalani\\DateRange\\Calculator'
+        );
     }
 
     public function make($start=Null, $end=Null)
@@ -123,6 +127,13 @@ class DateRange
         return $this->range_default;
     }
 
+    public function __call($name, $params)
+    {
+        $calculator = new $this->calculator($this->start, $this->end);
+        if (method_exists($calculator, $name))
+            return call_user_func_array([$calculator, $name], $params);
+    }
+
     public function __get($name)
     {
         if (method_exists($this, $name)) 
@@ -130,9 +141,11 @@ class DateRange
 
         list($value, $style) = $this->getValueAndStyleOfRequestedAttribute($name);
 
-        $closure = $this->getConfig("calculations.$style");
-        if ($closure)
-            return($this->executeClosure($value,$closure));
+        // instantiating here because the start and end
+        // values are not fixed.
+        $calculator = new $this->calculator($this->start, $this->end);
+        if (method_exists($calculator, $name))
+            return $calculator->$name();
 
         if ($value == 'range')
             return $this->applyStyleToRange($style, Null, Null);
@@ -155,21 +168,6 @@ class DateRange
             return $this->applyStyleToRange($style, $defaultFormat, $defaultValue);
 
         return $this->applyStyleToDate($date, $style, $defaultFormat, $defaultValue);
-    }
-
-    private function executeClosure($value, $closure)
-    {
-        if ($value == 'range') {
-            if ($this->canCompareDates())
-                return $closure($this->start, $this->end);
-
-            return $this->getConfig('none.calculations');
-        }
-
-        if ($this->isCarbonObject($this->$value))
-            return $closure($this->$value);
-
-        return $this->getConfig('none.calculations');
     }
 
     private function applyStyleToRange($requestedStyle, $defaultFormat, $defaultValue)
@@ -239,28 +237,6 @@ class DateRange
 
         return $date->format($this->getConfig('styles.default'));
     }
-
-// TODO: Temporary. Remove!
-
-    public function hours($roundToMinutes=1, $roundToDecimalPlaces=2)
-    {
-        if (! (is_object($this->start) && is_object($this->end)) )
-            return 0;
-        
-        $minutes = $this->start->diffInMinutes($this->end);
-        $hours = $minutes / 60;
-
-        $periodsPerHour = 60 / $roundToMinutes;
-        $roundedHours = round($hours * $periodsPerHour) / $periodsPerHour;
-
-        return round($roundedHours, $roundToDecimalPlaces);
-    }
-
-    public function hoursRoundedToNearest($minutes=1, $decimalPlaces=2)
-    {
-        return $this->hours($minutes, $decimalPlaces);
-    }
-
 
 
 // Helper Methods -------------------------------------------------------------

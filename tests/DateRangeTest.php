@@ -3,7 +3,7 @@
 use Kalani\DateRange\DateRange;
 use Carbon\Carbon;
 
-/** @group now */
+
 class DateRangeTest extends PHPUnit_Framework_TestCase
 {
     const DATE_ORDER_EXCEPTION = 'Kalani\DateRange\DateOrderException';
@@ -429,69 +429,20 @@ class DateRangeTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testShouldUseClosure()
+    public function testShouldGetCalculatedData()
     {
-        $this->config->setup([
-            'calculations.closure' => function($x){
-                return 'foo'; 
-            }]);
+        $this->config->setup(['calculations'=>'Kalani\\DateRange\\Calculator']);
+        $test = $this->test->make('10:00:00', '12:00:00');
 
-        $test = $this->test->make(self::DATE1_SHORT);
-        $this->assertEquals('foo', $test->closure);
-    }
-
-    public function testShouldCalculateDifferenceInDaysWithClosure()
-    {
-        $this->config->setup(['calculations.days'=>function($x,$y){
-            return $x->diffInDays($y);
-        }]);
-
-        $test = $this->test->make(self::DATE1_SHORT, self::DATE2_SHORT);
-        $this->assertEquals(3, $test->days);
-    }
-
-    public function testShouldNotAttemptClosureOnNonObject()
-    {
-        $this->config->setup([
-            'range.default' => ['only'=>''],
-            'none.default'=>'n/a',
-            'none.calculations'=>0,
-            'calculations.days'=>function($start,$end){
-                return $end->diffInDays($start);
-            }]);
-
-        $test = $this->test->make(DateRange::NONE);
-
-        $this->assertEquals('n/a', $test->start);
-        $this->assertEquals('n/a', $test->short);
-        $this->assertEquals(0, $test->days);
-    }
-
-    public function testShouldUseClosureOnOnePartOfMixedObject()
-    {
-        $this->config->setup([
-            'range.default' => ['before'=>'a ','middle'=>' - ','after'=>' b','only'=>'A '],
-            'styles.short' => 'x',
-            'none.default' => 'n/a',
-            'none.calculations' => 'HI',
-            'calculations.foo' => function($date) {
-                return $date->format('x');
-            }
-        ]);
-
-        $test = $this->test->make(self::DATE1_SHORT, DateRange::NONE);
-        $this->assertEquals('x', $test->start_short);
-        $this->assertEquals('n/a', $test->end_short);
-        $this->assertEquals('x', $test->start_foo);
-        $this->assertEquals('HI', $test->end_foo);
-        $this->assertEquals('HI', $test->foo);
+        $this->assertEquals(2, $test->hours);
+        $this->assertEquals(2, $test->hours());
     }
 
     public function testShouldReturnZeroLengthIfNoStart()
     {
         $test = $this->test->make(DateRange::NONE, DateRange::NONE);
 
-        $this->assertEquals(0, $test->hours());
+        $this->assertEquals(0, $test->hours);
     }
 
     public function testShouldReturnZeroLengthIfNoEnd()

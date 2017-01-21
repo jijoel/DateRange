@@ -23,6 +23,7 @@ class MockConfig implements Illuminate\Contracts\Config\Repository
     }
 
     public function has($key) {}
+    public function all() {}
     public function set($key, $value=null) {}
     public function prepend($key, $value) {}
     public function push($key, $value) {}
