@@ -16,6 +16,14 @@ class Calculator
 
     public function hours($roundToMinutes=1, $roundToDecimalPlaces=2)
     {
+        return $this->hoursRoundedToNearest(
+            $roundToMinutes, 
+            $roundToDecimalPlaces
+        );
+    }
+
+    public function hoursRoundedToNearest($roundToMinutes=1, $roundToDecimalPlaces=2)
+    {
         if (! $this->has(['start','end']))
             return 0;
 
@@ -26,11 +34,6 @@ class Calculator
         $roundedHours = round($hours * $periodsPerHour) / $periodsPerHour;
 
         return round($roundedHours, $roundToDecimalPlaces);
-    }
-
-    public function hoursRoundedToNearest($minutes=1, $decimalPlaces=2)
-    {
-        return $this->hours($minutes, $decimalPlaces);
     }
 
     public function days() 

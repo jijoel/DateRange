@@ -27,21 +27,21 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function it_rounds_hours_appropriately()
+    public function it_can_round_hours()
     {
         $test = $this->setupCalculator('10:00:00','14:12:00');
 
-        $this->assertEquals(4.25, $test->hours(15));
+        $this->assertEquals(4.25, $test->hoursRoundedToNearest(15));
     }
 
     /**
      * @test
      */
-    public function it_has_alias_for_rounding_hours()
+    public function it_rounds_hours_by_default()
     {
         $test = $this->setupCalculator('10:00:00','14:12:00');
 
-        $this->assertEquals(4.25, $test->hoursRoundedToNearest(15));
+        $this->assertEquals(4.25, $test->hours(15));
     }
 
     /**
