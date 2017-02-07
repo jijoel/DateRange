@@ -18,7 +18,7 @@ class DateRange
     {
         $this->config = $config;
         $this->calculator = $this->getConfig(
-            'calculations', 'Kalani\\DateRange\\Calculator'
+            'calculator', 'Kalani\\DateRange\\Calculator'
         );
     }
 
