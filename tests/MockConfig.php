@@ -13,7 +13,6 @@ class MockConfig extends Illuminate\Config\Repository
         if (isset($this->keys[$key]))
             return $this->keys[$key];
 
-        // var_dump($key);
         return $default;
     }
 
@@ -21,6 +20,12 @@ class MockConfig extends Illuminate\Config\Repository
     {
         $this->keys = $values;
     }
+
+    public function has($key) {}
+    public function all() {}
+    public function set($key, $value=null) {}
+    public function prepend($key, $value) {}
+    public function push($key, $value) {}
 
 }
 

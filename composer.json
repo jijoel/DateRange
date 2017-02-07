@@ -24,5 +24,8 @@
             "Kalani\\DateRange\\": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "config": {
+        "secure-http": true
+    }
 }
